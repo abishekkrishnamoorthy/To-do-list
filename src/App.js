@@ -6,10 +6,31 @@ import Input from "./Input"
 import Search from "./Search";
 
 function App() {
-  const [items,setitem]=useState( JSON.parse(localStorage.getItem("to-do-list")) || [])
+  const api_url="http://localhost:5000/itemss"
+  const [items,setitem]=useState([])
+  const [fetcherr,setfetcherr]=useState(null)
+  const [isloading, setisloading]=useState(true)
   useEffect (()=>{
-    JSON.parse(localStorage.getItem("to-do-list"))
-  },[])
+    const fetch_data=async ()=>{
+      try{
+        const res=await fetch(api_url);
+        if (!res.ok) throw new Error("error data")
+        const listitem= await res.json()
+        setitem(listitem)
+        setfetcherr(null)
+      } catch (err){
+        setfetcherr(err.message)
+      }
+      finally{
+        setisloading(false)
+      }
+      
+    }
+     setTimeout(() => {
+      (async ()=> await fetch_data()) ()  
+     }, 2000);
+    
+  }, [])
 const handlecheck=(id)=>{
  const listitem=items.map((item)=> item.id===id? {...item,checked:!item.checked}:item)
  setitem(listitem)
@@ -44,10 +65,14 @@ const [search,setsearch]=useState('')
     submit={handlesubmit}/>
     <Search search={search}
             setsearch={setsearch}/>
-    <Content  items={items.filter(i=> ((i.item).toLocaleLowerCase()).includes(search.toLocaleLowerCase()))}
+    <main>
+     {isloading && <p>loading items..</p>}
+    {!isloading &&<Content  items={items.filter(i=> ((i.item).toLocaleLowerCase()).includes(search.toLocaleLowerCase()))}
               handlecheck={handlecheck}
               handledlete={handledlete}
-              />
+              fetcherr={fetcherr}
+              />}
+    </main>
     <Footer item={items}/>
     </div>
   );

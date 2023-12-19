@@ -2,17 +2,17 @@
 import ItemList from "./ItemList"
 
 
-const Content = ({items,handlecheck,handledlete,iteml}) => {
+const Content = ({items,handlecheck,handledlete,fetcherr}) => {
   return (
-    <main >
+    <>
       
-      {(items.length)? 
+      {(fetcherr==null)?(items.length)? 
           (<ItemList items={items}
                     handlecheck={handlecheck}
                     handledlete={handledlete} />):
-          (<p className="text-2xl text-center self-center" >your list is empty</p>)}  
+          (<p className="text-2xl text-center self-center" >your list is empty</p>):fetcherr}  
               
-    </main>
+    </>
   )
 }
 
